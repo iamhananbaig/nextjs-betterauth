@@ -24,8 +24,13 @@ import { Input } from "@/components/ui/input";
 import { signInFormSchema } from "@/lib/auth-schema";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "@/hooks/use-toast";
+import { CircleX, LoaderCircle } from "lucide-react";
+import { useState } from "react";
+
 
 export default function SignIn() {
+  const [loading, setLoading] = useState(false);
+
   const form = useForm<z.infer<typeof signInFormSchema>>({
     resolver: zodResolver(signInFormSchema),
     defaultValues: {
@@ -44,23 +49,42 @@ export default function SignIn() {
       },
       {
         onRequest: () => {
+          setLoading(true);
           toast({
             title: "Please Wait",
+            description: (
+              <div className="flex items-center space-x-2">
+                <LoaderCircle className="animate-spin w-4 h-4" />
+                <span>Signing you in...</span>
+              </div>
+            ),
           });
         },
         onSuccess: () => {
+          setLoading(false);
           form.reset();
         },
         onError: (ctx) => {
-          alert(ctx.error.message);
+          setLoading(false);
+          toast({
+            variant: "destructive",
+            title: "Failed",
+            description: (
+              <div className="flex items-center space-x-2">
+                <CircleX  className="w-4 h-4" />
+                <span>{ctx.error.message}</span>
+              </div>
+            ),
+          });
         },
       }
     );
-    console.log(values);
+    
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto">
+    
+    <Card className="w-full max-w-md mx-auto ">
       <CardHeader>
         <CardTitle>Sign In</CardTitle>
         <CardDescription>
@@ -96,8 +120,12 @@ export default function SignIn() {
                 </FormItem>
               )}
             />
-            <Button className="w-full" type="submit">
-              Submit
+            <Button className="w-full" type="submit" disabled={loading}>
+            {loading ? (
+                <LoaderCircle className="animate-spin w-5 h-5 mx-auto" />
+              ) : (
+                "Submit"
+              )}
             </Button>
           </form>
         </Form>

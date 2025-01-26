@@ -9,7 +9,6 @@ export default async function Navbar() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
-
   return (
     <div className="border-b px-4">
       <div className="flex items-center justify-between mx-auto max-w-4xl h-16">
@@ -31,9 +30,14 @@ export default async function Navbar() {
               <Button type="submit">Sign Out</Button>
             </form>
           ) : (
+            <div className="flex gap-2">
+            <Link href="/sign-up" className={buttonVariants()}>
+              Sign Up
+            </Link>
             <Link href="/sign-in" className={buttonVariants()}>
               Sign In
             </Link>
+            </div>
           )}
         </div>
       </div>
